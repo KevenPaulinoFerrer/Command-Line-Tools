@@ -248,15 +248,18 @@ void create_report(fs::path &directory, const string &report_name, const string 
 
 string get_current_timestamp()
 {
-    time_t current_time = time(nullptr);
-    tm *local_time = localtime(&current_time);
+    time_t now = time(nullptr);
+    // tm *local_time = localtime(&current_time);
+    tm local_tm{};
 
-    if (local_time == nullptr)
+    errno_t err = localtime_s(&local_tm, &now);
+
+    if (err == 0)
         throw std::runtime_error("Unable to retrieve current time.");
 
     std::stringstream ss;
 
-    ss << std::put_time(local_time, "%Y-%m-%d_%H-%M-%S");
+    ss << std::put_time(&local_tm, "%Y-%m-%d_%H-%M-%S");
 
     return ss.str();
 }
